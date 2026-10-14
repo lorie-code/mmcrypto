@@ -55,16 +55,14 @@
       || window.MM_CONFIG.exchangeVerification.mode === 'preview';
     const exchangeProvider = () => window.MM_EXCHANGE_PROVIDER;
     const defaultExchanges = [
-      { id: 'weex', name: 'WEEX', relationship: 'partner', homeUrl: 'https://www.weex.com/', description: 'Current exchange collaboration.' },
-      { id: 'binance', name: 'Binance', relationship: 'example', homeUrl: 'https://www.binance.com/', description: 'Illustrative exchange listing. Partnership not confirmed.' },
-      { id: 'bybit', name: 'Bybit', relationship: 'example', homeUrl: 'https://www.bybit.com/', description: 'Illustrative exchange listing. Partnership not confirmed.' },
+      { id: 'weex', name: 'WEEX', relationship: 'partner', homeUrl: 'https://www.weex.com/', description: 'An optional next step for MMCrypto members. Register on WEEX, then return to connect your account.' },
     ];
     const configuredExchanges = Array.isArray(window.MM_CONFIG?.exchanges) ? window.MM_CONFIG.exchanges : [];
     const exchanges = defaultExchanges.map((fallback) => {
       const configured = configuredExchanges.find((item) => item?.id === fallback.id) || {};
       const homeUrl = safeUrl(configured.homeUrl, fallback.homeUrl);
-      const genericUrl = fallback.id === 'weex' ? safeUrl(window.MM_CONFIG?.links?.weexRegister, homeUrl) : homeUrl;
-      const candidate = safeUrl(configured.registrationUrl) || (fallback.id === 'weex' ? safeUrl(window.MM_CONFIG?.partner?.referralUrl) : null);
+      const genericUrl = safeUrl(window.MM_CONFIG?.links?.weexRegister, homeUrl);
+      const candidate = safeUrl(configured.registrationUrl) || safeUrl(window.MM_CONFIG?.partner?.referralUrl);
       // Bare official home/registration pages remain generic, even in a referral setting.
       const candidateUrl = candidate ? new URL(candidate) : null;
       const candidatePath = candidateUrl?.pathname.replace(/\/+$/, '').replace(/^\/[a-z]{2}(?:-[a-z]{2})?(?=\/|$)/i, '');
@@ -74,7 +72,7 @@
       return {
         id: fallback.id,
         name: typeof configured.name === 'string' && configured.name.trim() ? configured.name.trim().slice(0, 60) : fallback.name,
-        relationship: configured.relationship === 'partner' ? 'partner' : configured.relationship === 'example' ? 'example' : fallback.relationship,
+        relationship: 'partner',
         description: typeof configured.description === 'string' ? configured.description.slice(0, 300) : fallback.description,
         homeUrl, genericUrl, registrationUrl,
         inviteCode: typeof configured.inviteCode === 'string' && configured.inviteCode.trim() ? configured.inviteCode.trim().slice(0, 100) : null,
@@ -222,11 +220,10 @@
     };
     const renderAuth = () => {
       const codeStep = Boolean(challenge);
-      byId('auth-title').textContent = codeStep ? 'Try your demo code.' : mode === 'signup' ? 'Your next chapter.' : 'Welcome back.';
+      byId('auth-title').textContent = codeStep ? 'Try your demo code.' : mode === 'signup' ? 'Join MMCrypto.' : 'Welcome back.';
       byId('auth-email-step').hidden = codeStep;
       byId('auth-code-step').hidden = !codeStep;
       byId('auth-legal').hidden = mode !== 'signup';
-      byId('auth-alternatives').hidden = codeStep;
       consentInput.required = mode === 'signup';
       emailInput.disabled = codeStep;
       consentInput.disabled = codeStep;
@@ -295,7 +292,7 @@
         ? association.mode === 'preview'
           ? `${findExchange(association.exchangeId).name} · Demo linked with sample UID ${association.uid}. No real exchange account or invitation was verified; no rewards or VIP eligibility were granted.`
           : `${findExchange(association.exchangeId).name} · The verification service reported a matching referral for UID ${association.uid}. Rewards and VIP eligibility depend on separate published terms.`
-        : 'Choose an exchange above to explore registration and the email + UID check.';
+        : 'Your MMCrypto member preview is ready to explore. When you are ready, set up WEEX and return here with your WEEX email and UID.';
       const storageNote = storageAvailable ? 'Membership stays in this browser tab.' : 'Tab storage is unavailable; membership lasts only until this page reloads.';
       byId('hub-preview-note').textContent = exchangePreviewMode()
         ? `Interactive preview. ${storageNote} No real account is created, no email is sent, and no exchange account or referral is verified.`
@@ -303,6 +300,8 @@
       renderExchangeCards();
     };
     const route = () => {
+      // Retired public exchange links return to the MMCrypto homepage.
+      if (location.hash === '#collaborations') history.replaceState(null, '', '#home');
       resetMenu();
       renderMembership();
       if (location.hash === '#member-hub') {
@@ -419,30 +418,30 @@
       membership: { title: 'Your membership, explained.', paragraphs: [
         'Free membership opens this Member Hub and the member learning note in Content. In this frontend preview, signing in is a demonstration using a visible code.',
         'Demo accounts are stored in this browser tab only. Signing out clears the active session and demo account link; the email remains available for a later preview sign-in in the same tab. Closing the tab ends the demo storage.',
-      ], action: 'Explore the content', run: () => { location.hash = 'watch'; } },
-      partner: { title: 'Choose your starting point.', paragraphs: [
-        'WEEX is a current collaboration. Binance and Bybit are example listings; their partnerships are not confirmed. Each card opens a walkthrough for that exchange.',
-        'A designated referral URL is needed to establish the intended invitation relationship. A general official website or registration page is not a referral link. Pending links and invitation details are labelled in the walkthrough.',
-        'Review the exchange’s terms, regional availability and risks before registering. Registration and a demo association do not guarantee rewards or VIP access.',
-      ], action: 'Explore the exchanges', run: openHub },
+      ], action: 'Explore the articles', run: () => { location.hash = 'articles'; } },
+      partner: { title: 'Your next step with WEEX.', paragraphs: [
+        'Your MMCrypto website membership comes first. From this Member Hub, you can optionally register with partner exchange WEEX and return to connect your account.',
+        'A designated MMCrypto referral URL is needed to establish the intended invitation relationship. The link is still pending; the general official WEEX registration page does not establish that relationship.',
+        'Review WEEX terms, regional availability and risks before registering. Registration and a demo association do not guarantee rewards or VIP access.',
+      ], action: 'Set up WEEX', run: () => openLink('weex') },
       link: { title: 'Connect the right account.', paragraphs: [
-        'After registering through the designated referral link, return here and enter the email registered with that exchange and its UID. Your exchange email may differ from your website member email.',
+        'After registering with WEEX through the designated referral link, return here and enter your WEEX account email and UID. Your WEEX email may differ from your MMCrypto website email.',
         `In demo mode, use ${SAMPLE_EMAIL} with UID 10000001 for a matched preview, 10000002 for invitation mismatch, 10000003 for not found, or 10000004 for unavailable. Other combinations return demo not found.`,
         'Demo checks stay on this page. A real referral check requires a server integration that verifies the expected invitation relationship; the browser cannot verify it. No preview result earns referral credit, rewards or VIP access.',
       ], action: 'Explore the association flow', run: () => openLink('weex') },
       tutorial: { title: 'From registration to association.', steps: [
-        'Choose an exchange. WEEX is a current collaboration; Binance and Bybit are explicitly marked examples.',
-        'Open its designated MMCrypto referral link once supplied. Register on the exchange, then return and manually confirm that step. A general website link does not establish the referral.',
-        'Enter the exchange account email and UID. The exchange email does not need to match your website membership email.',
+        'Create your MMCrypto website membership, then open the WEEX setup in your Member Hub.',
+        'Open the designated MMCrypto referral link for WEEX once supplied. Register on WEEX, then return and manually confirm that step. A general official link does not establish the referral.',
+        'Enter your WEEX account email and UID. The WEEX email does not need to match your MMCrypto website email.',
         'Request a referral check. A live service must verify the intended invitation relationship; a UID’s format alone is not proof.',
-      ], paragraphs: ['The current frontend preview uses displayed sample inputs and simulates the registration step. Designated referral links, expected invitation details and live verification are pending.'], action: 'Explore the association flow', run: () => openLink('weex') },
+      ], paragraphs: ['The current frontend preview uses displayed sample inputs and simulates the WEEX registration step. The designated referral link, expected invitation details and live verification are pending.'], action: 'Explore the association flow', run: () => openLink('weex') },
       community: { title: 'Continue the conversation.', paragraphs: [
         'The official profiles in Social Media are available without membership. Telegram links to the German-speaking MMCrypto community; YouTube, X and Instagram offer more public updates.',
         'Discord sign-in and a Discord invite have not been configured. The email preview is the available way to explore this Member Hub.',
       ], action: 'Explore social channels', run: () => { location.hash = 'connect'; }, external: 'telegram', externalLabel: 'Open Telegram community ↗' },
       campaigns: { title: 'Campaign details are pending.', paragraphs: [
         'No MMCrypto-specific campaign, reward amount, referral eligibility, participation dates or claim rules have been confirmed for this preview.',
-        'A demo membership or demo account association does not enroll you in a campaign. Each exchange’s offers are governed by its own published rules.',
+        'A demo membership or demo account association does not enroll you in a campaign. WEEX offers are governed by its own published rules.',
       ], external: 'weexHome', externalLabel: 'Explore the official WEEX site ↗' },
       vip: { title: 'VIP details are pending.', paragraphs: [
         'MMCrypto-specific VIP benefits and eligibility have not been announced. This preview does not grant VIP access or check trading volume, balances or status.',
@@ -454,12 +453,12 @@
       ], action: 'Continue with email preview', run: () => openAuth(mode) },
       terms: { title: 'Terms preview.', kicker: 'MMCRYPTO / DOCUMENT PREVIEW', paragraphs: [
         'Published membership terms have not been supplied. This explanatory screen is a frontend preview, not a binding service agreement.',
-        'The demo illustrates email sign-in, a Member Hub and sample exchange association. It does not create a real account, verify an exchange account, award rewards or provide VIP access.',
+        'The demo illustrates MMCrypto email sign-in, a Member Hub and optional member onboarding. It does not create a real account, activate services or grant benefits.',
         'Acknowledging this preview enables the demonstration only. Official service terms must be provided before live membership is available.',
       ] },
       privacy: { title: 'Privacy preview.', kicker: 'MMCRYPTO / DOCUMENT PREVIEW', paragraphs: [
         'A published privacy policy has not been supplied. This screen explains how the membership demo behaves; it is not a complete privacy policy for a live service.',
-        'The membership demo stores sample member emails, the active demo email and an optional sample exchange association in sessionStorage for this tab. If storage is unavailable, that state remains only in page memory. Demo mode does not send these form inputs to a server. A future live exchange integration would send exchange details to its configured verification provider.',
+        'The membership demo stores sample member emails, the active demo email and optional sample onboarding progress in sessionStorage for this tab. If storage is unavailable, that state remains only in page memory. Demo mode does not send these form inputs to a server. Any future live integrations must be covered by a published privacy policy before activation.',
         'Signing out removes the active session and association while retaining demo email entries for same-tab sign-in. Closing the tab ends the demo storage. External platform links and video playback are separate services with their own privacy practices.',
       ] },
     };
@@ -467,6 +466,8 @@
     function showGuide(key) {
       const guide = guides[key];
       if (!guide) return;
+      const memberOnlyGuide = ['partner', 'link', 'tutorial', 'campaigns', 'vip'].includes(key);
+      if (memberOnlyGuide && !signedIn()) { requireSignIn(() => { openHub(); showGuide(key); }); return; }
       const fromAuth = authDialog.open;
       infoReturn = fromAuth ? { focus: document.activeElement, opener: returnFocus.get(authDialog) } : null;
       byId('member-info-title').textContent = guide.title;
@@ -481,7 +482,7 @@
       }
       (guide.paragraphs || []).forEach((text) => { const paragraph = document.createElement('p'); paragraph.textContent = text; copy.append(paragraph); });
       const actionButton = byId('member-info-action');
-      actionButton.textContent = fromAuth ? (key === 'discord' ? 'Continue with email preview' : 'Back to membership') : guide.action || 'Got it';
+      actionButton.textContent = fromAuth ? 'Back to membership' : guide.action || 'Got it';
       infoAction = fromAuth ? null : guide.run || null;
       const external = byId('member-info-external');
       let destination = guide.external ? safeUrl(window.MM_CONFIG?.links?.[guide.external]) : null;
@@ -501,26 +502,21 @@
       infoAction = null;
       closeDialog(infoDialog, callback ? 'action' : 'user', callback);
     });
-    byId('auth-discord').addEventListener('click', () => showGuide('discord'));
 
     function renderExchangeCards() {
       exchanges.forEach((exchange) => {
         const card = document.querySelector(`[data-exchange-card="${exchange.id}"]`);
-        const example = exchange.relationship !== 'partner';
         if (card) {
-          card.classList.toggle('exchange-card-example', example);
-          card.querySelector('[data-exchange-label]').textContent = example ? 'EXAMPLE' : 'COLLABORATION';
+          card.querySelector('[data-exchange-label]').textContent = 'PARTNER EXCHANGE';
           card.querySelector('.exchange-name').textContent = exchange.name;
-          card.querySelector('[data-exchange-description]').textContent = example
-            ? 'Illustrative exchange listing. Partnership not confirmed.' : exchange.description;
-          card.querySelector('[data-exchange-invite]').textContent = exchange.registrationUrl && !example
+          card.querySelector('[data-exchange-description]').textContent = exchange.description;
+          card.querySelector('[data-exchange-invite]').textContent = exchange.registrationUrl
             ? 'Designated referral link available' : 'Designated referral link pending';
-          card.querySelector('[data-exchange-status]').textContent = example
-            ? 'Example flow only. No collaboration or referral is confirmed.'
-            : exchangePreviewMode() ? 'Demo only. No live referral verification is connected.'
-              : 'A configured server provider must verify the invitation relationship.';
+          card.querySelector('[data-exchange-status]').textContent = exchangePreviewMode()
+            ? 'Demo only. No live referral verification is connected.'
+            : 'A configured server provider must verify the invitation relationship.';
           card.querySelector('[data-exchange-open]').textContent = exchangePreviewMode()
-            ? example ? 'Explore example demo' : 'Explore association demo' : 'View association steps';
+            ? 'Set up WEEX · demo' : 'Set up WEEX account';
         }
         document.querySelectorAll(`[data-exchange-home="${exchange.id}"]`).forEach((link) => {
           link.href = exchange.homeUrl;
@@ -568,29 +564,28 @@
 
     function openLink(exchangeId = 'weex') {
       const exchange = findExchange(exchangeId);
-      if (!signedIn()) { requireSignIn(() => openLink(exchange.id)); return; }
+      if (!signedIn()) { requireSignIn(() => { openHub(); openLink(exchange.id); }); return; }
       invalidateVerification();
       linkExchangeId = exchange.id;
       registrationConfirmed = false;
       const demo = exchangePreviewMode();
-      const example = exchange.relationship !== 'partner';
-      const referralUrl = !example ? exchange.registrationUrl : null;
+      const referralUrl = exchange.registrationUrl;
       const destination = referralUrl || exchange.genericUrl;
-      byId('link-kicker').textContent = `MMCRYPTO / ${example ? 'EXAMPLE · PARTNERSHIP NOT CONFIRMED' : 'EXCHANGE ASSOCIATION'}${demo ? ' · DEMO' : ''}`;
+      byId('link-kicker').textContent = `MMCRYPTO / WEEX SETUP${demo ? ' · DEMO' : ''}`;
       byId('link-title').textContent = demo ? `Explore ${exchange.name} association.` : `Connect your ${exchange.name} account.`;
       byId('link-preview-note').textContent = demo
-        ? `Demo only. This walkthrough does not contact ${exchange.name} or verify a real account or invitation. Use the sample inputs shown in the next step.${example ? ' This exchange listing is an example; its partnership is not confirmed.' : ''}`
+        ? `Demo only. This walkthrough does not contact ${exchange.name} or verify a real account or invitation. Use the sample inputs shown in the next step.`
         : 'Exchange verification requires a configured server provider. The service must verify the expected invitation relationship; this page cannot determine it from an email and UID alone.';
       byId('link-registration-title').textContent = `Register, then return here.`;
       byId('link-referral-label').textContent = referralUrl ? `Designated ${exchange.name} referral link` : 'General official link · designated referral pending';
       byId('link-referral-note').textContent = referralUrl
         ? `Use this designated link to register on ${exchange.name}, then return to this site. The exchange handles registration and applies its own eligibility and regional terms.`
-        : `A designated MMCrypto referral link for ${exchange.name} has not been supplied.${example ? ' This listing is an example and its partnership is not confirmed.' : ''} The link below is a general official destination; it does not establish the intended invitation relationship.`;
+        : `A designated MMCrypto referral link for ${exchange.name} has not been supplied. The link below is a general official destination; it does not establish the intended invitation relationship.`;
       byId('link-partner-url').value = destination;
       byId('link-copy-status').textContent = '';
       byId('link-open-exchange').href = destination;
       byId('link-open-exchange').textContent = referralUrl ? `Open ${exchange.name} referral registration ↗` : `Open ${exchange.name} official page ↗`;
-      byId('link-expected-invite').textContent = !example && exchange.inviteCode ? exchange.inviteCode : 'Pending — not supplied';
+      byId('link-expected-invite').textContent = exchange.inviteCode ? exchange.inviteCode : 'Pending — not supplied';
       byId('link-registration-help').textContent = demo
         ? 'In a live flow, register through the designated referral URL, then return here. No real registration is needed to explore this demo.'
         : 'After registering through the designated referral URL, return here to enter your exchange details. Verification is unavailable until the required referral configuration and server provider are connected.';

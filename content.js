@@ -16,8 +16,6 @@
     const results = document.getElementById('library-results');
     const empty = document.getElementById('library-empty');
     const feedback = document.getElementById('library-feedback');
-    const showMore = library.querySelector('[data-content-more]');
-    const pageSize = 6;
     const title = document.getElementById('content-title');
     const lede = document.getElementById('content-lede');
     const access = document.getElementById('content-access');
@@ -36,7 +34,6 @@
       }
     };
     let activeFilter = 'all';
-    let visibleLimit = pageSize;
     let activeNote = null;
     let noteTrigger = null;
     let suppressFocusReturn = false;
@@ -52,26 +49,16 @@
 
     const renderLibrary = () => {
       const matching = cards.filter((card) => matches(card, activeFilter));
-      const visible = matching.slice(0, visibleLimit);
       const memberCount = matching.filter((card) => matches(card, 'members')).length;
-      const remaining = matching.length - visible.length;
       filters.forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.contentFilter === activeFilter)));
-      cards.forEach((card) => { card.hidden = !visible.includes(card); });
-      if (results) results.textContent = `Showing ${visible.length} of ${matching.length} ${matching.length === 1 ? 'item' : 'items'}${!signedIn() && memberCount ? ` · ${memberCount} member ${memberCount === 1 ? 'note requires' : 'notes require'} preview sign-in.` : '.'}`;
+      cards.forEach((card) => { card.hidden = !matching.includes(card); });
+      if (results) results.textContent = `Showing ${matching.length} ${matching.length === 1 ? 'reading item' : 'reading items'}${!signedIn() && memberCount ? ` · ${memberCount} member ${memberCount === 1 ? 'note requires' : 'notes require'} preview sign-in.` : '.'}`;
       if (empty) empty.hidden = matching.length > 0;
-      if (showMore) {
-        showMore.hidden = remaining === 0;
-        const nextCount = Math.min(pageSize, remaining);
-        showMore.setAttribute('aria-label', `Show ${nextCount} more ${nextCount === 1 ? 'item' : 'items'}`);
-        const count = showMore.querySelector('[data-content-remaining]');
-        if (count) count.textContent = `${remaining} more`;
-      }
     };
 
     const applyFilter = (filter) => {
       if (!filters.some((button) => button.dataset.contentFilter === filter)) filter = 'all';
       activeFilter = filter;
-      visibleLimit = pageSize;
       renderLibrary();
       say('');
     };
@@ -86,18 +73,10 @@
       applyFilter('all');
       filters.find((button) => button.dataset.contentFilter === 'all')?.focus({ preventScroll: true });
     });
-    showMore?.addEventListener('click', () => {
-      const matching = cards.filter((card) => matches(card, activeFilter));
-      const nextCard = matching[visibleLimit];
-      const returnFocus = document.activeElement === showMore;
-      visibleLimit += pageSize;
-      renderLibrary();
-      if (returnFocus) nextCard?.querySelector('a[href], button:not([disabled])')?.focus({ preventScroll: true });
-    });
 
     // The configured channel is the source of truth. No cached video title is
     // presented as a current upload, and the feed is opened on YouTube itself.
-    library.querySelectorAll('[data-content-channel]').forEach((link) => {
+    document.querySelectorAll('[data-content-channel]').forEach((link) => {
       const destination = window.MM_CONFIG?.links?.youtube;
       if (typeof destination !== 'string') return;
       try {
@@ -208,7 +187,7 @@
         ++requestVersion;
         closeNote(false);
       }
-      // Keep the reader's expanded selection when preview membership changes.
+      // Preserve the selected article category when preview membership changes.
       renderLibrary();
     };
     document.addEventListener('mmcrypto:member-change', updateMembership);

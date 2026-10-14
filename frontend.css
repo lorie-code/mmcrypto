@@ -116,9 +116,6 @@ body.member-dialog-open .mobile-cta, body.content-dialog-open .mobile-cta { disp
 .auth-inline-actions { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-block: 12px 18px; }
 .auth-inline-actions .member-text-button { font-size: 10px; }
 .member-dialog button:disabled { cursor: default; opacity: .55; transform: none; }
-.auth-alternatives { margin-top: 20px; display: grid; grid-template-columns: 24px 1fr; align-items: center; gap: 14px; }
-.auth-alternatives > span { font-size: 9px; color: var(--muted); }
-.auth-alternatives .button { border-color: #c3bdaf; background: transparent; min-height: 46px; padding: 10px; }
 .auth-storage-note { border-top: 1px solid var(--line); padding-top: 14px; margin-top: 20px; font-size: 10px; }
 #auth-code-step > p { font-size: 12px; overflow-wrap: anywhere; }
 .auth-demo-code { background: #e6e1d4; border: 1px dashed #bbac8b; padding: 17px; margin-block: 17px; text-align: center; }
@@ -211,7 +208,6 @@ body.member-dialog-open .mobile-cta, body.content-dialog-open .mobile-cta { disp
   .auth-benefits li { padding: 0; border: 0; }
   .auth-benefits li b { font-size: 10px; margin: 0; color: #756446; }
   .auth-benefits li span { display: none; }
-  .auth-alternatives { margin-top: 16px; }
   .auth-storage-note { margin-top: 16px; }
 }
 @media (max-width:359px) {

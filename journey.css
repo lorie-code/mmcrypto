@@ -39,7 +39,12 @@
 /* Photography is part of the same canvas, with a soft edge behind the copy. */
 .journey-photo { position: absolute; z-index: 0; inset: 0; margin: 0; }
 .journey-photo img { position: absolute; right: 0; top: 0; width: 64%; height: 100%; object-fit: cover; object-position: 55% 50%; }
+.journey-photo-0 img { object-position: 52% 52%; }
+.journey-photo-1 img { object-position: 61% 57%; }
+.journey-photo-2 img { object-position: 70% 40%; }
 .journey-photo-4 img { object-position: 54% 48%; }
+.journey-photo-1 { --journey-mobile-focal: 53% 58%; }
+.journey-photo-2 { --journey-mobile-focal: 50% 22%; }
 .journey-photo::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, #243026 1%, #243026fa 25%, #243026c9 46%, #1b271a18 78%), linear-gradient(0deg, #19241de8, transparent 20%); }
 .journey-photo figcaption { position: absolute; z-index: 4; right: 29px; bottom: 24px; left: 64%; display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 8px; line-height: 1.7; color: #e5decd; }
 .journey-photo figcaption > span { width: 100%; }
@@ -87,14 +92,14 @@
   .journey-tab > b { display: block; font-size: 8px; margin-top: 8px; }
   .journey-window { height: 630px; scroll-margin-top: 10px; }
   .journey-copy, .journey-chapter-photo .journey-copy { padding: 31px 26px; width: 100%; }
-  .journey-chapter-photo .journey-copy { height: calc(100% - 55px); padding-bottom: 21px; }
+  .journey-chapter-photo .journey-copy { margin-top: 210px; height: calc(100% - 260px); padding-top: 20px; padding-bottom: 21px; }
   .journey-chapter-meta { gap: 12px; margin-bottom: 23px; }
   .journey-chapter-meta > span { font-size: 17px; }
   .journey-chapter-meta > p { font-size: 6.5px; letter-spacing: 1px; }
   .journey-chapter h3, .journey-chapter-photo h3 { font-size: clamp(30px, 7.5vw, 39px); line-height: 1.13; letter-spacing: -.9px; margin-bottom: 22px; }
   .journey-copy > p, .journey-chapter-photo .journey-copy > p { font-size: 13px; line-height: 1.9; }
   .journey-tags { gap: 8px 14px; margin-top: 23px; font-size: 8px; }
-  .journey-photo img { width: 100%; object-position: 58% 48%; }
+  .journey-photo img { width: 100%; height: 260px; object-position: var(--journey-mobile-focal, 50% 38%); }
   .journey-photo::after { background: linear-gradient(90deg, #17281bed, #1b2b23c4), linear-gradient(0deg, #18251af2, transparent 55%); }
   .journey-photo figcaption { left: 26px; right: 26px; bottom: 16px; justify-content: space-between; font-size: 8px; gap: 6px 10px; }
   .journey-photo figcaption > span { width: auto; }
@@ -124,6 +129,7 @@ body.motion-paused .journey-chapter::before, body.motion-paused .journey-tab, bo
   .journey-window { height: auto; display: block; overflow: visible; }
   .journey-chapter { height: auto; overflow: visible; break-inside: avoid; }
   .journey-copy, .journey-chapter-photo .journey-copy { width: 100%; height: auto; overflow: visible; padding: 28px; }
+  .journey-chapter-photo .journey-copy { margin-top: 0; }
   .journey-photo { position: relative; height: 300px; }
   .journey-photo img { width: 100%; }
   .journey-photo figcaption { left: 28px; }

@@ -1,10 +1,10 @@
 /*
- * MMCrypto personal-brand website · neutral v3 configuration.
+ * MMCrypto personal-brand website · member-first configuration.
  *
- * The header carries MMCrypto branding. WEEX is the current collaboration;
- * Binance and Bybit are illustrative listings, not confirmed partnerships.
+ * The public homepage and website registration carry only MMCrypto branding.
+ * WEEX onboarding is introduced inside the Member Hub after website sign-in.
  *
- * For a confirmed exchange, supply its approved exchanges[].registrationUrl
+ * For WEEX, supply its approved exchanges[].registrationUrl
  * and display-only inviteCode. WEEX also accepts partner.referralUrl as a
  * fallback. Bare official home/registration URLs remain generic destinations;
  * they do not establish an invitation relationship. Keep static HTML links
@@ -50,11 +50,9 @@ window.MM_CONFIG = {
     tutorialUrl: null,
     rewardTitle: null
   },
-  // Only WEEX is a confirmed collaboration. Other cards are explicitly examples.
+  // WEEX is the sole partner destination, shown only after MMCrypto sign-in.
   exchanges: [
-    { id: 'weex', name: 'WEEX', relationship: 'partner', homeUrl: 'https://www.weex.com/', registrationUrl: null, inviteCode: null, description: 'Current exchange collaboration.' },
-    { id: 'binance', name: 'Binance', relationship: 'example', homeUrl: 'https://www.binance.com/', registrationUrl: null, inviteCode: null, description: 'Illustrative exchange listing; partnership not confirmed.' },
-    { id: 'bybit', name: 'Bybit', relationship: 'example', homeUrl: 'https://www.bybit.com/', registrationUrl: null, inviteCode: null, description: 'Illustrative exchange listing; partnership not confirmed.' }
+    { id: 'weex', name: 'WEEX', relationship: 'partner', homeUrl: 'https://www.weex.com/', registrationUrl: null, inviteCode: null, description: 'An optional next step for MMCrypto members. Register on WEEX, then return to connect your account.' }
   ],
   // Real referral attribution requires a trusted server-side exchange integration.
   exchangeVerification: { mode: 'preview' }

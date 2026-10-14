@@ -23,7 +23,7 @@ ROOT = SCRIPT_FOLDER.parent
 SITE = SCRIPT_FOLDER if (SCRIPT_FOLDER / "index.html").is_file() else ROOT / "outputs" / "mmcrypto"
 OUTPUTS = SITE.parent
 SINGLE = OUTPUTS / "mmcrypto-single-file"
-REQUIRED = ("index.html", "styles.css", "player.css", "frontend.css", "journey.css", "neutral.css", "config.js", "app.js", "members.js", "content.js", "README.md", "assets/sources.json")
+REQUIRED = ("index.html", "styles.css", "player.css", "frontend.css", "journey.css", "neutral.css", "content-sections.css", "theme.css", "theme-members.css", "config.js", "app.js", "members.js", "content.js", "README.md", "assets/sources.json", "assets/mmcrypto-logo.png", "assets/favicon.png")
 ATTR_RE = re.compile(r"([\w:-]+)\s*=\s*([\"'])(.*?)\2", re.DOTALL)
 CSS_URL_RE = re.compile(r"url\(\s*([\"']?)(.*?)\1\s*\)", re.IGNORECASE)
 ZIP_DATE = (2026, 1, 1, 0, 0, 0)
@@ -195,21 +195,23 @@ def main() -> int:
         single_readme = """# MMCRYPTO · 单文件版
 
 本站的 HTML、CSS、JavaScript 和本地图片已合并到 index.html。
+当前为 2026-10-14 网站注册优先 / 官方 Logo / Story6 版：曜石黑、银白文字、香槟金重点；五章配图的固定区域滑动故事，视频和文章独立展示。
+MMCrypto 标识来自官方 YouTube 频道横幅，保留青蓝符号与原始字形；为深色页面增加白色外描边。
 上传 GitHub Pages 时，先解压 ZIP，再把 index.html 放在仓库根目录。
 不要上传 ZIP 本身，也不要与分文件源码版的 index.html 混淆。
 YouTube 视频和外部社媒/交易所链接仍需网络，视频播放取决于平台允许嵌入。
 直接双击 HTML 时，视频链接会在 YouTube 打开；HTTP(S) 预览支持站内弹窗。
 
-主导航、内容筛选、文章阅读、邮箱验证码演示、Member Hub 与账户关联演示均已包含。
+主导航、内容筛选、文章阅读、邮箱验证码演示、Member Hub 与账户关联演示均已包含。注册／登录弹窗仅保留邮箱方式，已取消 Discord 登录入口。
 会员功能是前台演示：不发邮件、不创建真实账户、不执行 Discord 登录或 WEEX 校验。
 演示验证码会直接显示；交易所邮箱可以与网站邮箱不同。
 关联示例邮箱为 exchange.demo@example.com；UID 10000001 显示匹配，10000002 显示邀请码不匹配，10000003 显示未找到，10000004 显示服务不可用。
 演示数据仅留在当前浏览器标签页；请使用虚构的示例邮箱。
 真实登录、专属推荐、账户校验和正式法律文件须另接后端与配置。
 
-首屏为 MMCrypto 个人品牌。WEEX 是合作方；Binance 和 Bybit 为展示示例，并非已确认合作方。
+首页仅引导注册 MMCrypto 网站，不展示任何交易所。完成网站注册或登录后，会员中心才展示 WEEX 引导；其他交易所入口已移除。
 关联流程包括指定链接注册、回填交易所邮箱+UID、校验邀请码归属。专属链接和校验接口待提供，当前仅演示。
-内容库包含 6 支官方视频、3 篇公开短评、2 篇本站原创学习笔记；成长故事含两张有来源和日期的真实照片。
+视频区包含 6 支官方视频；独立文章区包含 3 篇公开短评、2 篇本站原创学习笔记。五章成长故事各配一张不同的真实照片，来源和日期随图保留；近期照片不作为早年经历的历史影像。
 活动/VIP 暂未配置。页面没有编造奖励、时间或 VIP 条件。
 后续维护建议编辑完整源码，再运行源码内的 package_site.py 重新生成本文件。
 pro.weex.com/mmcrypto 必须由 WEEX 域名管理团队配置，本文件不会自动绑定域名。
