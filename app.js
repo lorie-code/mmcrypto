@@ -101,7 +101,127 @@
       activate(tabs.find((tab) => tab.getAttribute('aria-selected') === 'true') || tabs[0]);
     };
 
-    setupTabs('[data-story]', '.story-panel');
+    const setupJourney = () => {
+      const story = document.querySelector('#story.story-journey');
+      const windowEl = story?.querySelector('#journey-window');
+      if (!story || !windowEl) return;
+      const chapters = [...story.querySelectorAll('[data-journey-chapter]')];
+      const tabs = [...story.querySelectorAll('[data-journey-link]')];
+      const current = story.querySelector('#journey-current');
+      const progress = story.querySelector('#journey-progress');
+      const previous = story.querySelector('#journey-prev');
+      const next = story.querySelector('#journey-next');
+      if (!chapters.length || tabs.length !== chapters.length) return;
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+      let active = 0;
+      let target = null;
+      let lastWidth = 0;
+      let frame = null;
+      let settleTimer = null;
+      const clamp = (index) => Math.max(0, Math.min(chapters.length - 1, index));
+      const animate = () => !reduced.matches && !body.classList.contains('motion-paused');
+
+      const render = (index) => {
+        active = clamp(index);
+        chapters.forEach((chapter, i) => {
+          const selected = i === active;
+          // Inactive slides retain their snap positions but leave the focus order.
+          if (!selected && chapter.contains(document.activeElement)) windowEl.focus({ preventScroll: true });
+          chapter.classList.toggle('is-active', selected);
+          chapter.inert = !selected;
+          chapter.setAttribute('aria-hidden', String(!selected));
+          tabs[i].setAttribute('aria-selected', String(selected));
+          tabs[i].tabIndex = selected ? 0 : -1;
+        });
+        current.textContent = String(active + 1).padStart(2, '0');
+        progress.style.transform = `scaleX(${(active + 1) / chapters.length})`;
+        previous.setAttribute('aria-disabled', String(active === 0));
+        next.setAttribute('aria-disabled', String(active === chapters.length - 1));
+      };
+      const sync = () => {
+        frame = null;
+        const width = windowEl.clientWidth;
+        if (!width) return;
+        const index = clamp(Math.round(windowEl.scrollLeft / width));
+        if (target !== null && Math.abs(windowEl.scrollLeft - target * width) > 2) return;
+        target = null;
+        if (index !== active) render(index);
+      };
+      const finish = () => {
+        clearTimeout(settleTimer);
+        target = null;
+        sync();
+      };
+      const show = (index, smooth = true) => {
+        const destination = clamp(index);
+        const width = windowEl.clientWidth;
+        const adjacent = Math.abs(destination - active) === 1;
+        render(destination);
+        if (!width) return;
+        target = destination;
+        windowEl.scrollTo({ left: destination * width, behavior: smooth && adjacent && animate() ? 'smooth' : 'auto' });
+        clearTimeout(settleTimer);
+        settleTimer = setTimeout(finish, 200);
+      };
+      const realign = () => {
+        const width = windowEl.clientWidth;
+        if (!width) { lastWidth = 0; return; }
+        if (width !== lastWidth) {
+          lastWidth = width;
+          show(active, false);
+        }
+      };
+      const fromHash = () => {
+        const index = chapters.findIndex((chapter) => `#${chapter.id}` === location.hash);
+        if (index !== -1) show(index, false);
+      };
+
+      tabs.forEach((tab, index) => {
+        tab.addEventListener('click', () => show(index));
+        tab.addEventListener('keydown', (event) => {
+          let destination = index;
+          if (event.key === 'ArrowRight') destination = (index + 1) % tabs.length;
+          else if (event.key === 'ArrowLeft') destination = (index - 1 + tabs.length) % tabs.length;
+          else if (event.key === 'Home') destination = 0;
+          else if (event.key === 'End') destination = tabs.length - 1;
+          else return;
+          event.preventDefault();
+          tabs[destination].focus({ preventScroll: true });
+          show(destination);
+        });
+      });
+      previous.addEventListener('click', () => { if (active > 0) show(active - 1); });
+      next.addEventListener('click', () => { if (active < chapters.length - 1) show(active + 1); });
+      windowEl.addEventListener('keydown', (event) => {
+        if (event.target.closest('a,button,input,select,textarea')) return;
+        if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
+          event.preventDefault();
+          show(active + (event.key === 'ArrowRight' ? 1 : -1));
+        }
+      });
+      // Native horizontal touch / trackpad scrolling; vertical page scrolling is untouched.
+      windowEl.addEventListener('pointerdown', () => { target = null; }, { passive: true });
+      windowEl.addEventListener('wheel', () => { target = null; }, { passive: true });
+      windowEl.addEventListener('scroll', () => {
+        if (frame === null) frame = requestAnimationFrame(sync);
+        clearTimeout(settleTimer);
+        settleTimer = setTimeout(finish, 160);
+      }, { passive: true });
+      windowEl.addEventListener('scrollend', finish);
+      window.addEventListener('hashchange', fromHash);
+      window.addEventListener('pageshow', () => { realign(); fromHash(); });
+      window.addEventListener('resize', realign, { passive: true });
+      if ('ResizeObserver' in window) new ResizeObserver(realign).observe(windowEl);
+      // Pause an in-flight scroll immediately if motion is disabled.
+      const onMotionChange = () => { if (!animate()) show(active, false); };
+      new MutationObserver(onMotionChange).observe(body, { attributes: true, attributeFilter: ['class'] });
+      reduced.addEventListener?.('change', onMotionChange);
+      render(0);
+      realign();
+      fromHash();
+    };
+
+    setupJourney();
     setupTabs('[data-weex-tab]', '.weex-panel');
 
     const videoDialog = document.getElementById('video-dialog');
