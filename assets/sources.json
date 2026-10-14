@@ -1,0 +1,107 @@
+{
+  "project": "MMCRYPTO × WEEX",
+  "language": "en",
+  "reviewedAt": "2026-10-12",
+  "profile": {
+    "source": "User-provided BD profile and website request form",
+    "publicName": "MMCRYPTO",
+    "fullName": "Christopher Jaszczyński",
+    "scope": "Personal biography, market perspectives, creator origin story, Dubai base, and health-oriented channel.",
+    "notes": [
+      "Proposed website copy is not a verbatim quotation from Christopher.",
+      "Health content describes personal interests and daily habits, not medical advice or treatment claims.",
+      "No investment performance, award, exact wealth figure, or charitable outcome is asserted without additional verification."
+    ]
+  },
+  "socialProfiles": {
+    "youtube": "https://www.youtube.com/@mmcryptotube",
+    "x": "https://x.com/mmcrypto",
+    "instagram": "https://www.instagram.com/chrismmcrypto/",
+    "health": "https://www.instagram.com/chrismmhealth/",
+    "telegram": "https://t.me/MMCrypto"
+  },
+  "channelSnapshot": {
+    "source": "https://www.youtube.com/@MMCryptoTube",
+    "observedAt": "2026-10-09",
+    "subscribersDisplayed": "619K",
+    "videosDisplayed": "1,845",
+    "notes": "Public channel figures observed during the root agent's browser research. Counts change; do not treat them as live data or unique combined audience reach."
+  },
+  "videos": [
+    {
+      "id": "u1I9lzSNtzA",
+      "watchUrl": "https://www.youtube.com/shorts/u1I9lzSNtzA",
+      "originalTitle": "THE MOST EXPENSIVE MISTAKE OF YOUR LIFE!!!!!",
+      "observedAt": "2026-10-12",
+      "source": "Official MMCrypto and MMHealth channels",
+      "notes": "Official collaboration Short on unhealthy lifestyle costs. Page title is a punctuation-normalized version of the original.",
+      "localThumbnail": "assets/videos/mindset.webp",
+      "thumbnailSourceUrl": "https://i.ytimg.com/vi/u1I9lzSNtzA/maxresdefault.jpg",
+      "thumbnailSize": [
+        1280,
+        720
+      ]
+    }
+  ],
+  "images": [
+    {
+      "role": "Main portrait",
+      "localFile": "assets/chris-hero.webp",
+      "sourceUrl": "https://www.instagram.com/chrismmcrypto/p/CcF9eqXtiZ_/",
+      "status": "Verified public color photograph, cropped for the hero. Used once in the site; no generated likeness.",
+      "publishedAt": "2022-04-08",
+      "cropFromOriginalPixels": [
+        260,
+        500,
+        1170,
+        1410
+      ]
+    },
+    {
+      "role": "Health and training",
+      "localFile": "assets/chris-training.webp",
+      "sourceUrl": "https://www.instagram.com/chrismmcrypto/reel/DdsxGEcIIwV/",
+      "status": "Verified public reel cover; bundled as a local WebP asset",
+      "sourceContext": "Christopher's public Instagram training reel."
+    },
+    {
+      "role": "WEEX wordmark",
+      "localFile": "assets/weex-logo.png",
+      "sourceUrl": "https://www.weex.com/events/welcome-event?vipCode=syd0",
+      "status": "Official WEEX wordmark from previous website asset preparation; only the wordmark reused, no previous creator links or offer details"
+    }
+  ],
+  "weex": {
+    "officialHome": "https://www.weex.com/",
+    "registration": "https://www.weex.com/register",
+    "personalReferralUrl": null,
+    "campaignUrl": null,
+    "vipUrl": null,
+    "notes": [
+      "No MMCRYPTO-specific referral URL, campaign reward, VIP condition, or promotion period was supplied.",
+      "Registration uses the official generic URL until BD supplies an approved personal URL.",
+      "Campaign and VIP config entries remain null and preserve the official WEEX home fallback inside the corresponding information panel.",
+      "No referral code or reward terms have been copied from another creator."
+    ]
+  },
+  "deployment": {
+    "requestedAddress": "https://pro.weex.com/mmcrypto",
+    "status": "Requires deployment or routing by the WEEX domain owner; not configured by these static files."
+  },
+  "generalNotes": [
+    "YouTube videos are embedded from the original platform; video files are not redistributed in the source package.",
+    "Public source attribution records provenance and does not independently establish usage rights.",
+    "The website does not display a fabricated live market price, trading profit, campaign countdown, or testimonial.",
+    "The feature section includes one original creator video; public channel links are grouped in the social section. Superseded video selections are excluded from the delivered website."
+  ],
+  "telegramSnapshot": {
+    "source": "https://t.me/MMCrypto",
+    "observedAt": "2026-10-09",
+    "displayName": "MMCrypto (Deutsch)",
+    "note": "User-supplied link verified as a German-speaking public community; page labels it accordingly. The official YouTube header also lists https://t.me/MMCryptoENG, but the supplied destination is retained."
+  },
+  "editorialRevision": {
+    "date": "2026-10-13",
+    "direction": "Premium editorial layout with warm ivory, charcoal, muted gold, serif accents, and restrained borders. One hero portrait; the story is a typography-led interactive journey. A separate training photo and original video thumbnail are each used once. Removed repeated-channel cards and excess decoration. WEEX remains the sole promoted exchange."
+  }
+}

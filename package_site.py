@@ -1,0 +1,224 @@
+"""Build complete-source and single-file MMCrypto ZIPs using Python stdlib only.
+
+Run from any directory: python3 /path/to/project/work/package_mmcrypto.py
+The source site is not modified. ZIP members are rooted at index.html.
+"""
+from __future__ import annotations
+
+import argparse
+import base64
+import hashlib
+import html as html_module
+import mimetypes
+from pathlib import Path
+import re
+import sys
+from urllib.parse import unquote, urlsplit
+import zipfile
+
+
+SCRIPT_FOLDER = Path(__file__).resolve().parent
+ROOT = SCRIPT_FOLDER.parent
+# The same script can run from the original workspace or a downloaded source ZIP.
+SITE = SCRIPT_FOLDER if (SCRIPT_FOLDER / "index.html").is_file() else ROOT / "outputs" / "mmcrypto"
+OUTPUTS = SITE.parent
+SINGLE = OUTPUTS / "mmcrypto-single-file"
+REQUIRED = ("index.html", "styles.css", "config.js", "app.js", "README.md", "assets/sources.json")
+ATTR_RE = re.compile(r"([\w:-]+)\s*=\s*([\"'])(.*?)\2", re.DOTALL)
+CSS_URL_RE = re.compile(r"url\(\s*([\"']?)(.*?)\1\s*\)", re.IGNORECASE)
+ZIP_DATE = (2026, 1, 1, 0, 0, 0)
+
+
+def attributes(tag: str) -> dict[str, str]:
+    return {match[0].lower(): html_module.unescape(match[2]) for match in ATTR_RE.findall(tag)}
+
+
+def local_file(url: str, base: Path) -> Path | None:
+    """Resolve a local dependency, rejecting missing files and paths outside SITE."""
+    parsed = urlsplit(html_module.unescape(url.strip()))
+    if parsed.scheme or parsed.netloc or not parsed.path or url.startswith("#"):
+        return None
+    path = (SITE / unquote(parsed.path.lstrip("/")) if parsed.path.startswith("/")
+            else base / unquote(parsed.path)).resolve()
+    if not path.is_relative_to(SITE.resolve()):
+        raise ValueError(f"Local reference escapes the source directory: {url}")
+    if not path.is_file():
+        raise FileNotFoundError(f"Missing local dependency: {url} (relative to {base})")
+    return path
+
+
+def image_data(url: str, base: Path) -> str:
+    path = local_file(url, base)
+    if path is None:
+        return url
+    mime = mimetypes.guess_type(path.name)[0] or "application/octet-stream"
+    if not mime.startswith("image/"):
+        raise ValueError(f"Only local images may be embedded as assets: {path.relative_to(SITE)}")
+    encoded = base64.b64encode(path.read_bytes()).decode("ascii")
+    fragment = urlsplit(url).fragment
+    return f"data:{mime};base64,{encoded}" + (f"#{fragment}" if fragment else "")
+
+
+def inline_css(css: str, base: Path) -> str:
+    # The site intentionally uses plain CSS with no local @import build chain.
+    if re.search(r"@import\b", css, flags=re.IGNORECASE):
+        raise ValueError("CSS @import must be resolved before creating the single-file version.")
+
+    def replace_url(match: re.Match[str]) -> str:
+        url = match.group(2).strip()
+        if not url or url.startswith("#"):
+            return match.group(0)
+        return f'url("{image_data(url, base)}")'
+
+    return CSS_URL_RE.sub(replace_url, css)
+
+
+def make_single_html() -> str:
+    page = (SITE / "index.html").read_text(encoding="utf-8")
+    inlined_styles: list[str] = []
+    inlined_scripts: list[str] = []
+    script_bodies: list[str] = []
+
+    def stylesheet(match: re.Match[str]) -> str:
+        tag = match.group(0)
+        attrs = attributes(tag)
+        if "stylesheet" not in attrs.get("rel", "").split() or not attrs.get("href"):
+            return tag
+        path = local_file(attrs["href"], SITE)
+        if path is None:
+            return tag
+        css = inline_css(path.read_text(encoding="utf-8"), path.parent)
+        inlined_styles.append(path.name)
+        return "<style>\n" + css.replace("</style", "<\\/style") + "\n</style>"
+
+    page = re.sub(r"<link\b[^>]*>", stylesheet, page, flags=re.IGNORECASE)
+
+    def script(match: re.Match[str]) -> str:
+        tag = match.group(0)
+        opening = tag[:tag.index(">") + 1]
+        attrs = attributes(opening)
+        if not attrs.get("src"):
+            return tag
+        path = local_file(attrs["src"], SITE)
+        if path is None:
+            return tag
+        if attrs.get("type") == "module":
+            raise ValueError("This no-build packager expects classic scripts, not ES modules.")
+        source = path.read_text(encoding="utf-8")
+        # Prevent a JS string containing </script> from closing the HTML element.
+        source = re.sub(r"</script", lambda match: "<\\/" + match.group(0)[2:], source,
+                        flags=re.IGNORECASE)
+        script_bodies.append("<script>\n" + source + "\n</script>")
+        inlined_scripts.append(path.name)
+        return ""
+
+    page = re.sub(r"<script\b[^>]*>.*?</script\s*>", script, page,
+                  flags=re.IGNORECASE | re.DOTALL)
+    if "styles.css" not in inlined_styles:
+        raise ValueError("index.html must reference styles.css before packaging.")
+    if inlined_scripts != ["config.js", "app.js"]:
+        raise ValueError(f"Expected scripts in config.js → app.js order; found {inlined_scripts!r}")
+
+    def image_attribute(match: re.Match[str]) -> str:
+        attribute, quote, value = match.groups()
+        if urlsplit(html_module.unescape(value)).scheme or value.startswith(("//", "#")):
+            return match.group(0)
+        return f"{attribute}={quote}{image_data(value, SITE)}{quote}"
+
+    # Script and stylesheet references have been removed. Relative values here
+    # are site-owned image files (including favicon links and video thumbnails).
+    page = re.sub(r"\b(src|poster|href)\s*=\s*([\"'])(.*?)\2", image_attribute, page,
+                  flags=re.IGNORECASE | re.DOTALL)
+
+    def source_set(match: re.Match[str]) -> str:
+        quote, value = match.groups()
+        if value.strip().startswith("data:"):
+            return match.group(0)
+        entries = []
+        for entry in value.split(","):
+            parts = entry.strip().split(maxsplit=1)
+            if not parts:
+                continue
+            entries.append(image_data(parts[0], SITE) + (" " + parts[1] if len(parts) == 2 else ""))
+        return f"srcset={quote}" + ", ".join(entries) + quote
+
+    page = re.sub(r"\bsrcset\s*=\s*([\"'])(.*?)\1", source_set, page,
+                  flags=re.IGNORECASE | re.DOTALL)
+    # Also inline image URLs used by inline style attributes or a small inline style.
+    page = inline_css(page, SITE)
+    if not re.search(r"</body\s*>", page, flags=re.IGNORECASE):
+        raise ValueError("index.html is missing </body>.")
+    page = re.sub(r"</body\s*>", lambda _: "\n" + "\n".join(script_bodies) + "\n</body>",
+                  page, count=1, flags=re.IGNORECASE)
+    return page
+
+
+def zip_bytes(path: Path, members: dict[str, bytes]) -> None:
+    """Stable member order/metadata makes repeated builds easy to compare."""
+    with zipfile.ZipFile(path, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
+        for name, payload in sorted(members.items()):
+            info = zipfile.ZipInfo(name, date_time=ZIP_DATE)
+            info.compress_type = zipfile.ZIP_DEFLATED
+            info.external_attr = 0o644 << 16
+            archive.writestr(info, payload, compress_type=zipfile.ZIP_DEFLATED, compresslevel=9)
+    with zipfile.ZipFile(path) as archive:
+        if archive.testzip() is not None or "index.html" not in archive.namelist():
+            raise RuntimeError(f"ZIP verification failed: {path}")
+    digest = hashlib.sha256(path.read_bytes()).hexdigest()[:16]
+    print(f"{path.name}: {path.stat().st_size:,} bytes · {len(members)} files · SHA256 {digest}")
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--full-only", action="store_true", help="Create only the full-source ZIP.")
+    args = parser.parse_args()
+    missing = [name for name in REQUIRED if not (SITE / name).is_file()]
+    if missing:
+        parser.error("Site is not ready; missing: " + ", ".join(missing))
+
+    members = {
+        path.relative_to(SITE).as_posix(): path.read_bytes()
+        for path in sorted(SITE.rglob("*"))
+        if path.is_file() and path.name not in {".DS_Store"}
+        and not any(part.startswith(".") for part in path.relative_to(SITE).parts)
+        and path.suffix not in {".zip", ".pyc"}
+    }
+    members[".nojekyll"] = b""
+    # Prepare all content before writing outputs, so a missing asset cannot leave
+    # an apparently complete single-file delivery behind.
+    single_html = None if args.full_only else make_single_html()
+    OUTPUTS.mkdir(parents=True, exist_ok=True)
+    zip_bytes(OUTPUTS / "mmcrypto-complete-source.zip", members)
+
+    if single_html is not None:
+        SINGLE.mkdir(parents=True, exist_ok=True)
+        single_readme = """# MMCRYPTO × WEEX · 单文件版
+
+本站的 HTML、CSS、JavaScript 和本地图片已合并到 index.html。
+上传 GitHub Pages 时，先解压 ZIP，再把 index.html 放在仓库根目录。
+不要上传 ZIP 本身，也不要与分文件源码版的 index.html 混淆。
+YouTube 视频和外部社媒/WEEX 链接仍需网络，视频播放取决于平台允许嵌入。
+直接双击 HTML 时，视频链接会在 YouTube 打开；HTTP(S) 预览支持站内弹窗。
+
+WEEX 注册当前使用官方通用入口；MMCRYPTO 专属注册、活动和 VIP 地址待 BD 提供。
+活动/VIP 暂未配置。页面没有编造奖励、时间或 VIP 条件。
+后续维护建议编辑完整源码，再运行源码内的 package_site.py 重新生成本文件。
+pro.weex.com/mmcrypto 必须由 WEEX 域名管理团队配置，本文件不会自动绑定域名。
+"""
+        single_members = {
+            "index.html": single_html.encode("utf-8"),
+            "README.md": single_readme.encode("utf-8"),
+            ".nojekyll": b"",
+        }
+        for name, payload in single_members.items():
+            (SINGLE / name).write_bytes(payload)
+        zip_bytes(OUTPUTS / "mmcrypto-single-file.zip", single_members)
+    return 0
+
+
+if __name__ == "__main__":
+    try:
+        raise SystemExit(main())
+    except (FileNotFoundError, ValueError, RuntimeError) as error:
+        print(f"Packaging stopped: {error}", file=sys.stderr)
+        raise SystemExit(1) from error
