@@ -52,7 +52,7 @@
       const memberCount = matching.filter((card) => matches(card, 'members')).length;
       filters.forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.contentFilter === activeFilter)));
       cards.forEach((card) => { card.hidden = !matching.includes(card); });
-      if (results) results.textContent = `Showing ${matching.length} ${matching.length === 1 ? 'reading item' : 'reading items'}${!signedIn() && memberCount ? ` · ${memberCount} member ${memberCount === 1 ? 'note requires' : 'notes require'} preview sign-in.` : '.'}`;
+      if (results) results.textContent = `Showing ${matching.length} ${matching.length === 1 ? 'reading item' : 'reading items'}${!signedIn() && memberCount ? ` · ${memberCount} member ${memberCount === 1 ? 'note requires' : 'notes require'} preview login.` : '.'}`;
       if (empty) empty.hidden = matching.length > 0;
     };
 
@@ -145,7 +145,7 @@
       const returnTarget = dialog.contains(trigger) ? noteTrigger : trigger;
       if (note.member && !signedIn()) {
         if (typeof window.MM_MEMBERS?.requireSignIn !== 'function') {
-          say('Member sign-in is currently unavailable. Please reload the preview and try again.');
+          say('Member login is currently unavailable. Please reload the preview and try again.');
           return;
         }
         closeNote(false);

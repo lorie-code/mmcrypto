@@ -51,6 +51,11 @@
 .hub-onboarding-step strong { color: var(--ink); }
 .hub-association { background: var(--surface-raised); border-color: var(--member-border); }
 .hub-association .hub-status { color: var(--member-copy); }
+.hub-association[data-linked="true"] {
+  border-color: #83b5a070;
+  background: linear-gradient(110deg, #83b5a00a, transparent 75%), var(--surface-raised);
+}
+.hub-association[data-linked="true"] .hub-status { color: var(--member-success); }
 .hub-header p:not(.eyebrow),
 .hub-session > span:last-child,
 .hub-preview,
@@ -122,17 +127,9 @@
 .guide-copy a { color: var(--gold-light); }
 .guide-copy a:hover { color: var(--ink); }
 
-/* Auth tabs, explanatory sidebar, and sample code. */
-.auth-tabs button { color: var(--muted); }
-.auth-tabs button:hover { color: var(--ink); }
-.auth-tabs button[aria-pressed="true"] { color: var(--gold-light); border-color: var(--gold); }
-.auth-benefits {
-  background: radial-gradient(ellipse at 0 0, #c8b58f0c, transparent 75%), var(--surface-soft);
-  border-color: var(--line);
-}
-.auth-benefits li { border-color: var(--line); }
-.auth-benefits li b { color: var(--ink); }
-.auth-benefits li span { color: var(--muted); }
+/* Compact email authentication and its clearly labeled sample code. */
+.auth-switch { border-color: var(--line); }
+.auth-switch p { color: var(--muted); }
 .auth-demo-code { background: var(--surface-soft); border-color: #c8b58f66; }
 .auth-demo-code span { color: var(--gold-light); }
 
@@ -206,6 +203,15 @@
 .link-progress li > span { color: #9b927f; }
 .link-progress li[aria-current="step"] { color: var(--ink); border-color: var(--gold); }
 .link-progress li[aria-current="step"] > span { color: var(--gold-light); }
+.link-progress li.is-complete { color: var(--member-success); border-color: #83b5a080; }
+.link-progress li.is-complete > span { color: var(--member-success); }
+.link-progress li.is-complete > span::after {
+  content: "\2713";
+  display: inline-block;
+  margin-left: 8px;
+  font: 500 12px/1 var(--sans);
+  vertical-align: middle;
+}
 .link-explanation,
 .link-invite-row > span { color: var(--muted); }
 .link-fixtures { background: var(--surface-soft); border-color: #c8b58f52; }
@@ -237,6 +243,45 @@
   border-color: var(--gold);
 }
 
+/* A settled confirmation remains visible until the member chooses to continue. */
+.link-success { padding: 3px 0 4px; text-align: center; }
+.link-success-icon {
+  display: grid;
+  place-items: center;
+  width: 76px;
+  height: 76px;
+  margin: 0 auto 24px;
+  border: 1px solid #83b5a070;
+  border-radius: 50%;
+  color: var(--member-success);
+  background: radial-gradient(circle at 38% 30%, #b9dccc1f, #83b5a00b 76%);
+}
+.link-success-icon svg { display: block; width: 34px; height: 34px; }
+.link-success > .eyebrow { color: var(--member-success); letter-spacing: 1.4px; }
+.link-success h3 { font-size: clamp(27px, 5vw, 34px); line-height: 1.2; margin: 12px 0 14px; }
+.link-success h3:focus-visible { outline: 1px solid var(--gold); outline-offset: 6px; }
+.link-success-message { max-width: 440px; margin: 0 auto; color: var(--member-copy); font-size: 12px; line-height: 1.8; }
+.link-success-details {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  margin: 25px 0 24px;
+  padding: 19px 20px;
+  gap: 18px 22px;
+  border: 1px solid var(--line);
+  background: var(--surface-soft);
+  text-align: left;
+}
+.link-success-details > div { min-width: 0; }
+.link-success-details dt { margin-bottom: 7px; color: var(--muted); font-size: 10px; line-height: 1.5; }
+.link-success-details dd { margin: 0; color: var(--ink); font-size: 12px; line-height: 1.6; overflow-wrap: anywhere; }
+.link-success .button { width: 100%; min-height: 48px; }
+@media (max-width: 440px) {
+  .link-success-icon { width: 66px; height: 66px; margin-bottom: 20px; }
+  .link-success-icon svg { width: 30px; height: 30px; }
+  .link-success-details { grid-template-columns: minmax(0, 1fr); padding: 17px; gap: 16px; }
+  .link-success-details > div + div { border-top: 1px solid var(--line); padding-top: 14px; }
+}
+
 /* Reading room: the article is a calm continuation of the site. */
 .content-dialog .content-title,
 .content-note-section h3 { color: var(--ink); }
@@ -253,7 +298,3 @@
 .content-done { color: var(--ink); border-color: #ffffff3d; background: transparent; }
 .content-next { color: var(--gold-light); }
 .content-next:hover { color: var(--ink); }
-
-@media (max-width:599px) {
-  .auth-benefits li b { color: var(--gold-light); }
-}

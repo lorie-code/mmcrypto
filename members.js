@@ -220,7 +220,7 @@
     };
     const renderAuth = () => {
       const codeStep = Boolean(challenge);
-      byId('auth-title').textContent = codeStep ? 'Try your demo code.' : mode === 'signup' ? 'Join MMCrypto.' : 'Welcome back.';
+      byId('auth-title').textContent = codeStep ? 'Enter demo code' : mode === 'signup' ? 'Sign Up' : 'Log In';
       byId('auth-email-step').hidden = codeStep;
       byId('auth-code-step').hidden = !codeStep;
       byId('auth-legal').hidden = mode !== 'signup';
@@ -228,14 +228,14 @@
       emailInput.disabled = codeStep;
       consentInput.disabled = codeStep;
       codeInput.disabled = !codeStep;
-      document.querySelectorAll('[data-auth-mode]').forEach((button) => {
-        const active = button.dataset.authMode === mode;
-        button.setAttribute('aria-pressed', String(active));
-        button.classList.toggle('is-active', active);
+      byId('auth-switch').hidden = codeStep;
+      document.querySelectorAll('[data-auth-switch]').forEach((row) => {
+        row.hidden = row.dataset.authSwitch === mode;
       });
-      byId('auth-submit').textContent = codeStep ? (mode === 'signup' ? 'Create preview membership' : 'Enter member preview') : 'Continue with email preview';
+      authDialog.querySelector('[data-member-close]').setAttribute('aria-label', mode === 'signup' ? 'Close registration' : 'Close login');
+      byId('auth-submit').textContent = codeStep ? (mode === 'signup' ? 'Create demo account' : 'Log In · demo') : 'Continue with email';
       byId('auth-submit').disabled = !previewMode();
-      if (!previewMode()) authError('Member services are not connected. Preview sign-in is disabled outside preview mode.');
+      if (!previewMode()) authError('Member services are not connected. Preview login is disabled outside preview mode.');
     };
     const openAuth = (nextMode = 'signin', preserveCompletion = false) => {
       if (signedIn()) { openHub(); return; }
@@ -287,7 +287,8 @@
       if (byId('member-hub-link')) byId('member-hub-link').hidden = !active;
       byId('hub-email').textContent = active ? state.currentEmail : '';
       const association = active && state.association?.memberEmail === state.currentEmail ? state.association : null;
-      byId('hub-association-badge').textContent = association ? (association.mode === 'preview' ? 'DEMO LINKED' : 'REFERRAL MATCHED') : 'NOT LINKED';
+      byId('hub-association-badge').textContent = association ? (association.mode === 'preview' ? 'DEMO LINKED' : 'LINKED') : 'NOT LINKED';
+      byId('hub-association-badge').closest('.hub-association').dataset.linked = String(Boolean(association));
       byId('hub-link-summary').textContent = association
         ? association.mode === 'preview'
           ? `${findExchange(association.exchangeId).name} · Demo linked with sample UID ${association.uid}. No real exchange account or invitation was verified; no rewards or VIP eligibility were granted.`
@@ -366,15 +367,15 @@
     byId('auth-form').addEventListener('submit', (event) => {
       event.preventDefault();
       clearAuthErrors();
-      if (!previewMode()) { authError('Member services are not connected. No account can be created or signed in here.'); return; }
+      if (!previewMode()) { authError('Member services are not connected. No account can be created or logged in here.'); return; }
       if (!challenge) {
         const email = normalizeEmail(emailInput.value);
         if (!validEmail(email) || !emailInput.validity.valid) { authError('Enter a valid email address, such as you@example.com.', emailInput); return; }
         emailInput.value = email;
         if (mode === 'signup' && !consentInput.checked) { authError('Acknowledge the Terms preview and Privacy preview to try free membership.', consentInput); return; }
         const existing = state.accounts.includes(email);
-        if (mode === 'signup' && existing) { authError('A preview account already exists for this email in this tab. Choose Sign in to continue.', emailInput); return; }
-        if (mode === 'signin' && !existing) { authError('No preview account exists for this email in this tab. Choose Join free to create a demo membership.', emailInput); return; }
+        if (mode === 'signup' && existing) { authError('A preview account already exists for this email in this tab. Choose Log In to continue.', emailInput); return; }
+        if (mode === 'signin' && !existing) { authError('No preview account exists for this email in this tab. Choose Sign Up to create a demo membership.', emailInput); return; }
         generateCode(email);
         return;
       }
@@ -416,8 +417,8 @@
 
     const guides = {
       membership: { title: 'Your membership, explained.', paragraphs: [
-        'Free membership opens this Member Hub and the member learning note in Content. In this frontend preview, signing in is a demonstration using a visible code.',
-        'Demo accounts are stored in this browser tab only. Signing out clears the active session and demo account link; the email remains available for a later preview sign-in in the same tab. Closing the tab ends the demo storage.',
+        'Free membership opens this Member Hub and the member learning note in Content. In this frontend preview, logging in is a demonstration using a visible code.',
+        'Demo accounts are stored in this browser tab only. Signing out clears the active session and demo account link; the email remains available for a later preview login in the same tab. Closing the tab ends the demo storage.',
       ], action: 'Explore the articles', run: () => { location.hash = 'articles'; } },
       partner: { title: 'Your next step with WEEX.', paragraphs: [
         'Your MMCrypto website membership comes first. From this Member Hub, you can optionally register with partner exchange WEEX and return to connect your account.',
@@ -437,7 +438,7 @@
       ], paragraphs: ['The current frontend preview uses displayed sample inputs and simulates the WEEX registration step. The designated referral link, expected invitation details and live verification are pending.'], action: 'Explore the association flow', run: () => openLink('weex') },
       community: { title: 'Continue the conversation.', paragraphs: [
         'The official profiles in Social Media are available without membership. Telegram links to the German-speaking MMCrypto community; YouTube, X and Instagram offer more public updates.',
-        'Discord sign-in and a Discord invite have not been configured. The email preview is the available way to explore this Member Hub.',
+        'Discord login and a Discord invite have not been configured. The email preview is the available way to explore this Member Hub.',
       ], action: 'Explore social channels', run: () => { location.hash = 'connect'; }, external: 'telegram', externalLabel: 'Open Telegram community ↗' },
       campaigns: { title: 'Campaign details are pending.', paragraphs: [
         'No MMCrypto-specific campaign, reward amount, referral eligibility, participation dates or claim rules have been confirmed for this preview.',
@@ -453,13 +454,13 @@
       ], action: 'Continue with email preview', run: () => openAuth(mode) },
       terms: { title: 'Terms preview.', kicker: 'MMCRYPTO / DOCUMENT PREVIEW', paragraphs: [
         'Published membership terms have not been supplied. This explanatory screen is a frontend preview, not a binding service agreement.',
-        'The demo illustrates MMCrypto email sign-in, a Member Hub and optional member onboarding. It does not create a real account, activate services or grant benefits.',
+        'The demo illustrates MMCrypto email login, a Member Hub and optional member onboarding. It does not create a real account, activate services or grant benefits.',
         'Acknowledging this preview enables the demonstration only. Official service terms must be provided before live membership is available.',
       ] },
       privacy: { title: 'Privacy preview.', kicker: 'MMCRYPTO / DOCUMENT PREVIEW', paragraphs: [
         'A published privacy policy has not been supplied. This screen explains how the membership demo behaves; it is not a complete privacy policy for a live service.',
         'The membership demo stores sample member emails, the active demo email and optional sample onboarding progress in sessionStorage for this tab. If storage is unavailable, that state remains only in page memory. Demo mode does not send these form inputs to a server. Any future live integrations must be covered by a published privacy policy before activation.',
-        'Signing out removes the active session and association while retaining demo email entries for same-tab sign-in. Closing the tab ends the demo storage. External platform links and video playback are separate services with their own privacy practices.',
+        'Signing out removes the active session and association while retaining demo email entries for same-tab login. Closing the tab ends the demo storage. External platform links and video playback are separate services with their own privacy practices.',
       ] },
     };
 
@@ -550,11 +551,40 @@
       linkStep = step;
       byId('link-registration-step').hidden = step !== 'registration';
       byId('link-details-step').hidden = step !== 'details';
-      setLinkProgress(step);
+      byId('link-success-step').hidden = step !== 'success';
+      byId('link-preview-note').hidden = step === 'success';
+      setLinkProgress(step === 'success' ? 'result' : step);
+      linkDialog.querySelectorAll('.link-progress li').forEach((item) => item.classList.toggle('is-complete', step === 'success'));
+      const titleId = step === 'success' ? 'link-success-title' : step === 'registration' ? 'link-registration-title' : 'link-details-title';
       requestAnimationFrame(() => {
-        if (linkDialog.open) focusVisible(byId(step === 'registration' ? 'link-registration-title' : 'link-details-title'));
+        if (linkDialog.open && linkStep === step) focusVisible(byId(titleId));
       });
     }
+
+    function showLinkSuccess(association) {
+      const demo = association.mode === 'preview';
+      const name = findExchange(association.exchangeId).name;
+      byId('link-title').textContent = demo ? 'Demo setup complete.' : 'Setup complete.';
+      byId('link-success-kicker').textContent = demo ? 'DEMO RESULT' : 'ACCOUNT CONNECTED';
+      byId('link-success-title').textContent = demo ? `${name} linked · demo` : `${name} linked successfully`;
+      byId('link-success-message').textContent = demo
+        ? 'The sample account is linked in this demo. No real WEEX account or invitation was verified; no rewards or VIP access were granted.'
+        : 'Your account is linked. The verification service confirmed the expected invitation relationship. Rewards and VIP access depend on separate published terms.';
+      byId('link-success-email').textContent = association.email;
+      byId('link-success-uid').textContent = association.uid;
+      setLinkStep('success');
+      linkDialog.scrollTop = 0;
+    }
+
+    byId('link-success-done').addEventListener('click', () => {
+      closeDialog(linkDialog, 'action', () => {
+        openHub();
+        requestAnimationFrame(() => {
+          const summary = byId('hub-link-summary');
+          if (!hub.hidden) { summary.scrollIntoView({ block: 'center' }); focusVisible(summary); }
+        });
+      });
+    });
 
     function clearLinkResult() {
       byId('link-result').textContent = '';
@@ -668,7 +698,7 @@
         result.dataset.state = 'error';
         if (field) { field.setAttribute('aria-invalid', 'true'); focusVisible(field); }
       };
-      if (!signedIn()) { fail('Your preview session has ended. Sign in before trying an association.'); return; }
+      if (!signedIn()) { fail('Your preview session has ended. Log in before trying an association.'); return; }
       if (!linkDialog.open || linkStep !== 'details' || !registrationConfirmed) {
         fail('Complete the registration step before requesting a referral check.'); return;
       }
@@ -733,6 +763,8 @@
         save();
         renderMembership();
         notifyMemberChange();
+        showLinkSuccess(state.association);
+        return;
       }
       focusVisible(result);
     });

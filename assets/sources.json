@@ -522,7 +522,8 @@
       "Member flows remain frontend previews using tab session storage, with an in-memory fallback. No real authentication, email delivery or Discord OAuth is connected.",
       "Exchange verification defaults to preview. A future provider hook has a server-owned invitation contract; changing mode does not create a backend.",
       "The public homepage and authentication dialog contain no exchange exposure. After website sign-in, Member Hub offers only WEEX onboarding. Other exchange listings and configuration have been removed.",
-      "Sign In and signup dialogs offer email only. The Discord alternative button, divider, auth entry handler and obsolete CSS have been removed."
+      "Log In and signup dialogs offer email only. The Discord alternative button, divider, auth entry handler and obsolete CSS have been removed.",
+      "Compact single-column authentication: Log In and Sign Up headings distinguish modes, with one contextual switch below the form. Removed repeated marketing/sidebar/tab content and consolidated demo/storage copy. Website signup, email code flow and member callbacks remain intact."
     ]
   },
   "storyRevision": {
@@ -671,7 +672,13 @@
       "Membership preview and exchange verification mode are independent; the adapter hook is not a production authentication system.",
       "Only matched results save an association. No preview result verifies a real account or referral, creates referral credit, or grants rewards or VIP eligibility."
     ],
-    "entry": "Complete MMCrypto website signup or sign-in, then select Set up WEEX in Member Hub."
+    "entry": "Complete MMCrypto website signup or sign-in, then select Set up WEEX in Member Hub.",
+    "successPresentation": {
+      "view": "Dedicated completion panel with checkmark, exchange email, UID, completed steps, and return-to-Member-Hub action.",
+      "demoTitle": "WEEX linked · demo",
+      "verifiedTitle": "WEEX linked successfully",
+      "guard": "Shown only on matched; preview explicitly disclaims any real account or referral verification. Persistent hub status is updated. Failed responses keep the detail form and show their error."
+    }
   },
   "storyLayoutRevision": {
     "date": "2026-10-14",
