@@ -1,5 +1,5 @@
 {
-  "project": "MMCRYPTO personal brand · Obsidian / Story6",
+  "project": "MMCRYPTO personal brand · Noir / Story6",
   "language": "en",
   "reviewedAt": "2026-10-14",
   "profile": {
@@ -488,15 +488,26 @@
   },
   "editorialRevision": {
     "date": "2026-10-14",
-    "version": "Obsidian / Story6 / Members2",
-    "direction": "Obsidian and charcoal surfaces, silver text, restrained champagne accents, authentic color photographs. Five illustrated story chapters in one fixed carousel. Videos and articles have separate page sections and main-navigation links. The public homepage promotes only MMCrypto website registration. WEEX appears only after sign-in inside Member Hub and its onboarding dialogs.",
+    "version": "Noir / Story6 / Linked2",
+    "direction": "Near-black and graphite base, silver-white typography, restrained MMCrypto cyan on primary actions, active chapter indicators, focus states, hover details and fine edges. Hero uses a localized softly masked glow, an ice-silver title gradient and a precise photo frame. No large blue surface blocks. Existing authentic imagery, story carousel, videos/articles and membership behavior are preserved; exchanges appear only after website login.",
     "stylesheets": [
       "neutral.css",
       "theme.css",
       "theme-members.css",
       "content-sections.css"
     ],
-    "officialBranding": "Authentic official YouTube banner wordmark replaces the earlier custom MM monogram; cyan brand symbol retained and used for the favicon."
+    "officialBranding": "Authentic official YouTube banner wordmark replaces the earlier custom MM monogram; cyan brand symbol retained and used for the favicon.",
+    "palette": {
+      "background": "#0b0e13",
+      "surface": "#141a22",
+      "surfaceSoft": "#10151d",
+      "surfaceRaised": "#1b2430",
+      "primaryAccent": "#40bdeb",
+      "textAccent": "#6dcff4",
+      "lightAccent": "#a4e7ff",
+      "primaryText": "#f4f7fa",
+      "secondaryText": "#aab4c1"
+    }
   },
   "frontendRevision": {
     "date": "2026-10-14",

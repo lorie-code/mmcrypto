@@ -195,7 +195,7 @@ def main() -> int:
         single_readme = """# MMCRYPTO · 单文件版
 
 本站的 HTML、CSS、JavaScript 和本地图片已合并到 index.html。
-当前为 2026-10-14 网站注册优先 / 官方 Logo / Story6 版：曜石黑、银白文字、香槟金重点；五章配图的固定区域滑动故事，视频和文章独立展示。
+当前为 2026-10-14 Noir / 网站注册优先 / 官方 Logo / Story6 版：黑色与炭灰底色、银白文字、少量 Logo 青蓝点缀；五章配图的固定区域滑动故事，视频和文章独立展示。
 MMCrypto 标识来自官方 YouTube 频道横幅，保留青蓝符号与原始字形；为深色页面增加白色外描边。
 上传 GitHub Pages 时，先解压 ZIP，再把 index.html 放在仓库根目录。
 不要上传 ZIP 本身，也不要与分文件源码版的 index.html 混淆。

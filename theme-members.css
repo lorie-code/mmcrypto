@@ -1,22 +1,22 @@
-/* Member and reading surfaces share the site's charcoal / champagne palette.
+/* Member and reading surfaces use graphite, with cyan reserved for actions and focus.
    Partner onboarding is shown after website registration. */
 .member-hub,
 .member-dialog,
 .content-dialog {
   color-scheme: dark;
   color: var(--ink);
-  --member-border: #ffffff29;
-  --member-subtle: #ffffff0a;
-  --member-copy: #c1c4cb;
-  --member-error: #f2b7a8;
-  --member-success: #b9dccc;
+  --member-border: #c4d6ed29;
+  --member-subtle: #ffffff05;
+  --member-copy: var(--muted-strong);
+  --member-error: #ffc0b4;
+  --member-success: #b1e5d0;
 }
 
 /* Member Hub and exchange cards. */
 .hub-badge {
-  color: var(--gold-light);
-  border-color: #c8b58f52;
-  background: #c8b58f0a;
+  color: var(--muted-strong);
+  border-color: var(--member-border);
+  background: #ffffff04;
 }
 .hub-card,
 .exchange-card {
@@ -25,8 +25,8 @@
   border-color: var(--member-border);
 }
 .exchange-card:not(.exchange-card-example) {
-  background: linear-gradient(135deg, #c8b58f0a, transparent 70%), var(--surface);
-  border-color: #c8b58f52;
+  background: var(--surface);
+  border-color: var(--member-border);
 }
 .exchange-card-example { background: var(--surface-soft); }
 .hub-exchange-grid { grid-template-columns: minmax(0, 1fr); }
@@ -45,7 +45,7 @@
   .exchange-start { padding: 22px 0 0; border-left: 0; border-top: 1px solid var(--line); }
   .exchange-logo { width: 140px; }
 }
-.exchange-number { color: var(--gold); }
+.exchange-number { color: var(--muted); }
 .exchange-name,
 .exchange-invite,
 .hub-onboarding-step strong { color: var(--ink); }
@@ -53,7 +53,7 @@
 .hub-association .hub-status { color: var(--member-copy); }
 .hub-association[data-linked="true"] {
   border-color: #83b5a070;
-  background: linear-gradient(110deg, #83b5a00a, transparent 75%), var(--surface-raised);
+  background: var(--surface-raised);
 }
 .hub-association[data-linked="true"] .hub-status { color: var(--member-success); }
 .hub-header p:not(.eyebrow),
@@ -67,21 +67,21 @@
 .hub-pending-row p { color: var(--muted); }
 .hub-preview strong,
 .hub-pending-row strong { color: var(--ink); }
-.hub-steps button > span:first-child { color: var(--gold); }
+.hub-steps button > span:first-child { color: var(--muted); }
 .member-hub .member-text-button,
 .member-dialog .member-text-button,
 .member-hub .text-link,
-.member-dialog .text-link { color: var(--gold-light); }
+.member-dialog .text-link { color: var(--muted-strong); }
 .member-hub .member-text-button:hover,
 .member-dialog .member-text-button:hover,
 .member-hub .text-link:hover,
-.member-dialog .text-link:hover { color: var(--ink); }
+.member-dialog .text-link:hover { color: var(--accent-text); }
 
 /* Keep the earlier single-partner component compatible with the same theme. */
-.hub-partner { color: var(--ink); background: var(--surface); border-color: #c8b58f52; }
-.hub-partner .hub-badge { color: var(--gold-light); border-color: #c8b58f52; }
+.hub-partner { color: var(--ink); background: var(--surface); border-color: var(--member-border); }
+.hub-partner .hub-badge { color: var(--muted-strong); border-color: var(--member-border); }
 .hub-partner .hub-card-header .eyebrow,
-.hub-partner .member-text-button { color: var(--gold-light); }
+.hub-partner .member-text-button { color: var(--muted-strong); }
 .hub-partner > p:not(.eyebrow):not(.member-note):not(.hub-status),
 .hub-partner .member-note { color: var(--muted); }
 .hub-partner .hub-status { color: var(--member-success); }
@@ -92,28 +92,29 @@
 .member-dialog,
 .content-dialog {
   background: var(--surface);
-  border-color: #ffffff29;
-  box-shadow: 0 30px 100px #00000094;
+  border-color: var(--member-border);
+  box-shadow: 0 30px 100px #00000085;
 }
 .member-dialog::backdrop,
-.content-dialog::backdrop { background: #030509c9; }
+.content-dialog::backdrop { background: #030609c9; }
 .member-dialog-head,
 .content-dialog-header { background: var(--surface); border-color: var(--line); }
+.member-dialog-head .eyebrow { color: var(--muted); }
 .member-dialog-close,
 .content-close {
   color: var(--ink);
   background: transparent;
-  border-color: #ffffff36;
+  border-color: #c4d6ed38;
 }
 .member-dialog-close:hover,
 .content-close:hover,
-.content-done:hover { background: #ffffff0d; border-color: #c8b58f70; }
+.content-done:hover { background: #ffffff06; border-color: #c4d6ed60; }
 .member-preview-note {
-  background: #c8b58f0c;
-  border-color: var(--gold);
-  color: #bfc0c4;
+  background: var(--surface-soft);
+  border-color: #c4d6ed50;
+  color: var(--muted-strong);
 }
-.member-preview-note strong { color: var(--gold-light); }
+.member-preview-note strong { color: var(--ink); }
 .member-dialog .member-note,
 .auth-demo-code small { color: var(--muted); }
 .member-dialog .auth-field label,
@@ -124,14 +125,14 @@
 .guide-copy b,
 .link-invite-row strong,
 .auth-demo-code strong { color: var(--ink); }
-.guide-copy a { color: var(--gold-light); }
-.guide-copy a:hover { color: var(--ink); }
+.guide-copy a { color: var(--muted-strong); }
+.guide-copy a:hover { color: var(--accent-text); }
 
 /* Compact email authentication and its clearly labeled sample code. */
 .auth-switch { border-color: var(--line); }
 .auth-switch p { color: var(--muted); }
-.auth-demo-code { background: var(--surface-soft); border-color: #c8b58f66; }
-.auth-demo-code span { color: var(--gold-light); }
+.auth-demo-code { background: var(--surface-soft); border-color: var(--member-border); }
+.auth-demo-code span { color: var(--ink); }
 
 /* Every form state remains legible on the dark surface. */
 .auth-field input,
@@ -139,27 +140,27 @@
 .link-referral .hub-link-row input {
   background: var(--surface-soft);
   color: var(--ink);
-  border-color: #ffffff3d;
-  caret-color: var(--gold-light);
+  border-color: #c4d6ed40;
+  caret-color: var(--accent-light);
 }
 .auth-field input::placeholder,
-.hub-link-row input::placeholder { color: #858c99; opacity: 1; }
+.hub-link-row input::placeholder { color: #8995a4; opacity: 1; }
 .auth-field input:hover,
-.hub-link-row input:hover { border-color: #c8b58f80; }
+.hub-link-row input:hover { border-color: #c4d6ed68; }
 .auth-field input:focus-visible,
-.hub-link-row input:focus-visible { border-color: var(--gold); outline-color: var(--gold-light); }
-.auth-field input[aria-invalid="true"] { border-color: #e4a08f; background: #221a1c; }
+.hub-link-row input:focus-visible { border-color: var(--accent); outline-color: var(--accent-light); }
+.auth-field input[aria-invalid="true"] { border-color: #f2ad9c; background: #2a1c23; }
 .auth-field input:disabled { background: var(--surface-soft); color: var(--muted); border-color: var(--line); }
 .auth-field input:-webkit-autofill,
 .auth-field input:-webkit-autofill:hover,
 .auth-field input:-webkit-autofill:focus {
   -webkit-text-fill-color: var(--ink);
   -webkit-box-shadow: 0 0 0 1000px var(--surface-soft) inset;
-  caret-color: var(--gold-light);
+  caret-color: var(--accent-light);
 }
 .auth-field input:autofill { color: var(--ink); background: var(--surface-soft); }
-.auth-check input { accent-color: var(--gold); }
-.auth-check input:focus-visible { outline-color: var(--gold-light); }
+.auth-check input { accent-color: var(--accent); }
+.auth-check input:focus-visible { outline-color: var(--accent-light); }
 .auth-error { color: var(--member-error); }
 
 /* Actions use a single primary treatment throughout the account flow. */
@@ -167,17 +168,17 @@
 .member-hub .button-weex,
 .member-dialog .button-dark,
 .member-dialog .button-weex {
-  background: var(--gold-light);
+  background: var(--accent);
   color: var(--on-accent);
-  border-color: var(--gold-light);
+  border-color: var(--accent);
 }
 .member-hub .button-dark:hover,
 .member-hub .button-weex:hover,
 .member-dialog .button-dark:hover,
 .member-dialog .button-weex:hover {
-  background: #f0e2c7;
+  background: var(--accent-hover);
   color: var(--on-accent);
-  border-color: #f0e2c7;
+  border-color: var(--accent-hover);
 }
 .exchange-actions .button:not(.button-dark),
 .hub-actions .button:not(.button-dark):not(.button-weex),
@@ -186,23 +187,23 @@
 #link-open-exchange {
   color: var(--ink);
   background: transparent;
-  border-color: #ffffff3d;
+  border-color: #c4d6ed40;
 }
 .exchange-actions .button:not(.button-dark):hover,
 .hub-actions .button:not(.button-dark):not(.button-weex):hover,
 .hub-link-row .button:hover,
 .link-referral .hub-link-row .button:hover,
 #link-open-exchange:hover {
-  color: var(--gold-light);
-  background: #ffffff06;
-  border-color: #c8b58f80;
+  color: var(--accent-text);
+  background: #ffffff04;
+  border-color: var(--accent);
 }
 
 /* Exchange attribution, including every possible verification result. */
 .link-progress li { color: var(--muted); border-color: var(--line); }
-.link-progress li > span { color: #9b927f; }
-.link-progress li[aria-current="step"] { color: var(--ink); border-color: var(--gold); }
-.link-progress li[aria-current="step"] > span { color: var(--gold-light); }
+.link-progress li > span { color: var(--muted); }
+.link-progress li[aria-current="step"] { color: var(--ink); border-color: var(--accent); }
+.link-progress li[aria-current="step"] > span { color: var(--accent-light); }
 .link-progress li.is-complete { color: var(--member-success); border-color: #83b5a080; }
 .link-progress li.is-complete > span { color: var(--member-success); }
 .link-progress li.is-complete > span::after {
@@ -214,7 +215,7 @@
 }
 .link-explanation,
 .link-invite-row > span { color: var(--muted); }
-.link-fixtures { background: var(--surface-soft); border-color: #c8b58f52; }
+.link-fixtures { background: var(--surface-soft); border-color: var(--member-border); }
 .link-fixture { color: var(--member-copy); background: var(--surface-soft); }
 .link-fixtures .link-fixture { background: transparent; }
 .link-fixture strong { color: var(--ink); }
@@ -223,24 +224,24 @@
 .link-result[data-state="invitation_mismatch"],
 .link-result[data-state="not_found"] {
   color: var(--member-error);
-  background: #2c1c20;
-  border-color: #d99785;
+  background: #2d1e24;
+  border-color: #f2ad9c;
 }
 .link-result[data-state="matched"],
 .link-result[data-state="success"] {
   color: var(--member-success);
-  background: #172721;
+  background: #162620;
   border-color: #83b5a0;
 }
 .link-result[data-state="loading"] {
-  color: #c8ced9;
-  background: #202631;
-  border-color: #8f9dae;
+  color: var(--muted-strong);
+  background: var(--surface-raised);
+  border-color: #8995a4;
 }
 .link-result[data-state="unavailable"] {
-  color: var(--gold-light);
-  background: #29251e;
-  border-color: var(--gold);
+  color: #ffe0a6;
+  background: #2b261e;
+  border-color: #d9b976;
 }
 
 /* A settled confirmation remains visible until the member chooses to continue. */
@@ -259,7 +260,7 @@
 .link-success-icon svg { display: block; width: 34px; height: 34px; }
 .link-success > .eyebrow { color: var(--member-success); letter-spacing: 1.4px; }
 .link-success h3 { font-size: clamp(27px, 5vw, 34px); line-height: 1.2; margin: 12px 0 14px; }
-.link-success h3:focus-visible { outline: 1px solid var(--gold); outline-offset: 6px; }
+.link-success h3:focus-visible { outline: 1px solid var(--accent); outline-offset: 6px; }
 .link-success-message { max-width: 440px; margin: 0 auto; color: var(--member-copy); font-size: 12px; line-height: 1.8; }
 .link-success-details {
   display: grid;
@@ -287,14 +288,14 @@
 .content-note-section h3 { color: var(--ink); }
 .content-attribution,
 .content-dialog .content-eyebrow,
-.content-note-section h3 > span { color: var(--gold-light); }
-.content-lede { color: #d3d5da; }
+.content-note-section h3 > span { color: var(--muted-strong); }
+.content-lede { color: var(--muted-strong); }
 .content-note-section p,
 .content-exercise > p:not(.content-eyebrow),
 .content-checklist { color: var(--member-copy); }
-.content-exercise { background: var(--surface-raised); border-color: var(--gold); }
-.content-checklist li::before { border-color: var(--gold); }
+.content-exercise { background: var(--surface-soft); border-color: var(--member-border); }
+.content-checklist li::before { border-color: #c4d6ed70; }
 .content-learning-scope { color: var(--muted); }
-.content-done { color: var(--ink); border-color: #ffffff3d; background: transparent; }
-.content-next { color: var(--gold-light); }
-.content-next:hover { color: var(--ink); }
+.content-done { color: var(--ink); border-color: #c4d6ed40; background: transparent; }
+.content-next { color: var(--muted-strong); }
+.content-next:hover { color: var(--accent-text); }
